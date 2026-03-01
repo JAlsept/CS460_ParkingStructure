@@ -164,7 +164,7 @@ public class ParkingGUI extends Application {
     // ══════════════════════════════════════════════════════════════
     private Pane buildFloorPane() {
         Pane p = new Pane();
-        p.setPrefSize(FW, FH);
+        p.setPrefSize(FW, FH + 60);  // extra 60px so bottom row lights aren't clipped
 
         Rectangle floor = new Rectangle(0, 0, FW, FH);
         floor.setFill(FLOOR_COLOR);
@@ -449,9 +449,8 @@ public class ParkingGUI extends Application {
     // ══════════════════════════════════════════════════════════════
     private void handleCarEnter() {
         if (animating) { addLog("⚠ Animation in progress"); return; }
-        if (!ipms.capacityAvailable()) { addLog("✗ Structure full — entry denied"); return; }
         int spot = findFirstEmptySpot();
-        if (spot < 0) { addLog("✗ No empty spots"); return; }
+        if (spot < 0) { addLog("✗ Structure full — entry denied"); return; }
 
         animating = true;
         addLog("→ Entry sensor triggered");
@@ -477,6 +476,7 @@ public class ParkingGUI extends Application {
                     );
                     drive.setOnFinished(evv -> {
                         spotSensorDriver.onSensorReading(spot, true);
+                        updateSpotLight(spot, true);  // update immediately, don't wait for callback
                         addLog("✓ Parked in spot P" + (spot + 1));
                         entryCar.setLayoutX(-70);
                         PauseTransition close = new PauseTransition(Duration.millis(400));
@@ -517,6 +517,7 @@ public class ParkingGUI extends Application {
             pauseBeforeOpen.setOnFinished(ev1 -> {
                 animateExitGate(true);
                 spotSensorDriver.onSensorReading(spot, false);
+                updateSpotLight(spot, false);  // update immediately, don't wait for callback
                 addLog("✓ Spot P" + (spot + 1) + " now available");
                 PauseTransition pauseAfterOpen = new PauseTransition(Duration.millis(500));
                 pauseAfterOpen.setOnFinished(ev2 -> {
@@ -543,7 +544,10 @@ public class ParkingGUI extends Application {
     }
 
     private void handleReset() {
-        for (int i = 0; i < TOTAL_SPOTS; i++) spotSensorDriver.onSensorReading(i, false);
+        for (int i = 0; i < TOTAL_SPOTS; i++) {
+            spotSensorDriver.onSensorReading(i, false);
+            updateSpotLight(i, false);  // clear lights immediately
+        }
         animating = false;
         entryCar.setLayoutX(-70);
         exitCar.setLayoutX(FW + 100);
@@ -576,6 +580,13 @@ public class ParkingGUI extends Application {
     // ══════════════════════════════════════════════════════════════
     //  SPOT HELPERS
     // ══════════════════════════════════════════════════════════════
+    private int countAvailableSpots() {
+        int count = 0;
+        for (int i = 0; i < TOTAL_SPOTS; i++)
+            if (spotLights[i] != null && spotLights[i].getFill().equals(SPOT_EMPTY)) count++;
+        return count;
+    }
+
     private int findFirstEmptySpot() {
         for (int i = 0; i < TOTAL_SPOTS; i++)
             if (spotLights[i] != null && spotLights[i].getFill().equals(SPOT_EMPTY)) return i;
@@ -600,7 +611,7 @@ public class ParkingGUI extends Application {
     }
 
     private void refreshDisplays() {
-        int a = ipms.totalAvailable;
+        int a = countAvailableSpots();
         availableCountLabel.setText(String.valueOf(a));
         availableCountLabel.setTextFill(a == 0 ? SPOT_OCCUPIED : SPOT_EMPTY);
         if (a == 0) {
