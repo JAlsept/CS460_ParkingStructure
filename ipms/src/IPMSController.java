@@ -4,6 +4,7 @@ import java.util.Map;
 public class IPMSController {
 
     int totalAvailable;
+    int totalSpots;
     int[] floorAvailable;
     Map<Integer, Boolean> spotOccupied;
     Map<Integer, Integer> spotToFloor;
@@ -16,6 +17,7 @@ public class IPMSController {
 
     public IPMSController(int totalSpots, int[] floorLayout) {
         this.totalAvailable = totalSpots;
+        this.totalSpots = totalSpots;
         this.floorAvailable = floorLayout.clone();
         this.spotOccupied = new HashMap<>();
         this.spotToFloor = new HashMap<>();
@@ -79,7 +81,7 @@ public class IPMSController {
             if (val) occupied++;
         }
         // TODO: need actual total capacity stored somewhere, using spotOccupied size for now
-        totalAvailable = spotOccupied.size() - occupied;
+        totalAvailable = totalSpots - occupied;
 
         // update per-floor counts
         // TODO: implement floor-level breakdown once spotToFloor is populated
