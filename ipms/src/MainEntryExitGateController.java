@@ -30,7 +30,7 @@ public class MainEntryExitGateController {
         sendEventToIPMS(new Event("EXIT"));
     }
 
-    /** Forwards events to the main IPMS controller. */
+    /** Forwards events to the main IPMS controller.*/
     public void sendEventToIPMS(Event e) {
         ipms.processInput(e);
     }
