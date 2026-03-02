@@ -5,6 +5,7 @@ public class IPMSController {
 
     int totalAvailable;
     int[] floorAvailable;
+    int[] floorCapacity;
     Map<Integer, Boolean> spotOccupied;
     Map<Integer, Integer> spotToFloor;
     boolean systemOperational;
@@ -15,14 +16,23 @@ public class IPMSController {
     DataStore dataStore;
 
     public IPMSController(int totalSpots, int[] floorLayout) {
-        this.totalAvailable = totalSpots;
         this.floorAvailable = floorLayout.clone();
+        this.floorCapacity = floorLayout.clone();
         this.spotOccupied = new HashMap<>();
         this.spotToFloor = new HashMap<>();
         this.systemOperational = true;
 
-        // TODO: load spot-to-floor mapping from config or DB on startup
-        // hardcoded for now, fix later
+        // Fixed floor mapping
+        int spotID = 0;
+        for(int floor = 0; floor < floorLayout.length; floor++){
+            for(int i = 0; i < floorLayout[floor];i++){
+                spotToFloor.put(spotID,floor);
+                spotOccupied.put(spotID,false); // all spots empty
+                spotID++;
+            }
+        }
+        this.totalAvailable = spotID;
+
 
         dataStore = new DataStore();
         gateController = new MainEntryExitGateController(this);
@@ -74,16 +84,23 @@ public class IPMSController {
     }
 
     public void updateAvailability() {
-        int occupied = 0;
-        for (boolean val : spotOccupied.values()) {
-            if (val) occupied++;
+        int[] newFloorAvailabile = new int[floorAvailable.length];
+        for(Map.Entry<Integer,Boolean> entry: spotOccupied.entrySet()){
+            int spotID = entry.getKey();
+            boolean isOccupied = entry.getValue();
+            int floor = spotToFloor.get(spotID);
+
+            if(!isOccupied){
+                newFloorAvailabile[floor]++;
+            }
         }
-        // TODO: need actual total capacity stored somewhere, using spotOccupied size for now
-        totalAvailable = spotOccupied.size() - occupied;
 
-        // update per-floor counts
-        // TODO: implement floor-level breakdown once spotToFloor is populated
-
+        this.floorAvailable =newFloorAvailabile;
+        int total = 0;
+        for(int count :floorAvailable){
+            total += count;
+        }
+        this.totalAvailable = total;
         dataStore.storeCapacity();
         gateController.updateDisplay(totalAvailable, floorAvailable);
     }
@@ -102,4 +119,26 @@ public class IPMSController {
         }
         return sb.toString();
     }
+
+    /**
+     * Returns the floor a given spot is on, -1 if none
+     * @return
+     */
+    public int getFloorForSpot(int spotID){
+        return spotToFloor.getOrDefault(spotID,-1);
+    }
+
+    // true if a specific spot is available
+    public boolean isSpotAvailable(int spotID){
+        return spotOccupied.containsKey(spotID) && !spotOccupied.get(spotID);
+    }
+
+    /**
+     * Get total number of spots
+     * @return total number of spots
+     */
+    public int getTotalSpots(){
+        return spotOccupied.size();
+    }
+
 }
