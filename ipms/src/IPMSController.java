@@ -4,6 +4,7 @@ import java.util.Map;
 public class IPMSController {
 
     int totalAvailable;
+    int totalCapacity;
     int[] floorAvailable;
     Map<Integer, Boolean> spotOccupied;
     Map<Integer, Integer> spotToFloor;
@@ -15,18 +16,25 @@ public class IPMSController {
     DataStore dataStore;
 
     public IPMSController(int totalSpots, int[] floorLayout) {
+        this.totalCapacity = totalSpots;
         this.totalAvailable = totalSpots;
         this.floorAvailable = floorLayout.clone();
         this.spotOccupied = new HashMap<>();
         this.spotToFloor = new HashMap<>();
         this.systemOperational = true;
 
-        // TODO: load spot-to-floor mapping from config or DB on startup
-        // hardcoded for now, fix later
-
         dataStore = new DataStore();
         gateController = new MainEntryExitGateController(this);
         occupancyController = new ParkingSpotOccupancyController(this);
+    }
+
+    // overload so spot map can be passed in directly
+    public IPMSController(int totalSpots, int[] floorLayout, Map<Integer, Integer> spotMap) {
+        this(totalSpots, floorLayout);
+        this.spotToFloor.putAll(spotMap);
+        for (int id : spotMap.keySet()) {
+            spotOccupied.put(id, false);
+        }
     }
 
     public void processInput(Event e) {
@@ -60,6 +68,10 @@ public class IPMSController {
     }
 
     public boolean authorizeEntry() {
+        if (!systemOperational) {
+            System.out.println("system not operational, denying entry");
+            return false;
+        }
         if (!capacityAvailable()) {
             System.out.println("structure full, denying entry");
             return false;
@@ -78,19 +90,29 @@ public class IPMSController {
         for (boolean val : spotOccupied.values()) {
             if (val) occupied++;
         }
-        // TODO: need actual total capacity stored somewhere, using spotOccupied size for now
-        totalAvailable = spotOccupied.size() - occupied;
+        totalAvailable = totalCapacity - occupied;
 
-        // update per-floor counts
-        // TODO: implement floor-level breakdown once spotToFloor is populated
+        // recalculate per-floor counts from spotToFloor map
+        int[] updatedFloor = new int[floorAvailable.length];
+        for (Map.Entry<Integer, Boolean> entry : spotOccupied.entrySet()) {
+            Integer floor = spotToFloor.get(entry.getKey());
+            if (floor != null && !entry.getValue()) {
+                updatedFloor[floor]++;
+            }
+        }
+        floorAvailable = updatedFloor;
 
         dataStore.storeCapacity();
         gateController.updateDisplay(totalAvailable, floorAvailable);
     }
 
     public void updateSystemState() {
-        // TODO: add health checks for sub-controllers
-        // for now just save state
+        // if either sub-controller is gone something is seriously wrong
+        if (gateController == null || occupancyController == null) {
+            systemOperational = false;
+            System.out.println("a sub-controller is null, something went wrong");
+        }
+        // TODO: add heartbeat or status polling per sub-controller
         dataStore.storeSystemState();
     }
 
