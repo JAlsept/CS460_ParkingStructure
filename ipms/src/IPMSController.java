@@ -4,6 +4,7 @@ import java.util.Map;
 public class IPMSController {
 
     int totalAvailable;
+    int totalCapacity;
     int[] floorAvailable;
     int[] floorCapacity;
     Map<Integer, Boolean> spotOccupied;
@@ -16,27 +17,27 @@ public class IPMSController {
     DataStore dataStore;
 
     public IPMSController(int totalSpots, int[] floorLayout) {
+        this.totalCapacity = totalSpots;
+        this.totalAvailable = totalSpots;
+        this.totalSpots = totalSpots;
         this.floorAvailable = floorLayout.clone();
         this.floorCapacity = floorLayout.clone();
         this.spotOccupied = new HashMap<>();
         this.spotToFloor = new HashMap<>();
         this.systemOperational = true;
 
-        // Fixed floor mapping
-        int spotID = 0;
-        for(int floor = 0; floor < floorLayout.length; floor++){
-            for(int i = 0; i < floorLayout[floor];i++){
-                spotToFloor.put(spotID,floor);
-                spotOccupied.put(spotID,false); // all spots empty
-                spotID++;
-            }
-        }
-        this.totalAvailable = spotID;
-
-
         dataStore = new DataStore();
         gateController = new MainEntryExitGateController(this);
         occupancyController = new ParkingSpotOccupancyController(this);
+    }
+
+    // overload so spot map can be passed in directly
+    public IPMSController(int totalSpots, int[] floorLayout, Map<Integer, Integer> spotMap) {
+        this(totalSpots, floorLayout);
+        this.spotToFloor.putAll(spotMap);
+        for (int id : spotMap.keySet()) {
+            spotOccupied.put(id, false);
+        }
     }
 
     public void processInput(Event e) {
@@ -70,6 +71,10 @@ public class IPMSController {
     }
 
     public boolean authorizeEntry() {
+        if (!systemOperational) {
+            System.out.println("system not operational, denying entry");
+            return false;
+        }
         if (!capacityAvailable()) {
             System.out.println("structure full, denying entry");
             return false;
@@ -94,6 +99,17 @@ public class IPMSController {
                 newFloorAvailabile[floor]++;
             }
         }
+        totalAvailable = totalCapacity - occupied;
+
+        // recalculate per-floor counts from spotToFloor map
+        int[] updatedFloor = new int[floorAvailable.length];
+        for (Map.Entry<Integer, Boolean> entry : spotOccupied.entrySet()) {
+            Integer floor = spotToFloor.get(entry.getKey());
+            if (floor != null && !entry.getValue()) {
+                updatedFloor[floor]++;
+            }
+        }
+        floorAvailable = updatedFloor;
 
         this.floorAvailable =newFloorAvailabile;
         int total = 0;
@@ -106,8 +122,12 @@ public class IPMSController {
     }
 
     public void updateSystemState() {
-        // TODO: add health checks for sub-controllers
-        // for now just save state
+        // if either sub-controller is gone something is seriously wrong
+        if (gateController == null || occupancyController == null) {
+            systemOperational = false;
+            System.out.println("a sub-controller is null, something went wrong");
+        }
+        // TODO: add heartbeat or status polling per sub-controller
         dataStore.storeSystemState();
     }
 
