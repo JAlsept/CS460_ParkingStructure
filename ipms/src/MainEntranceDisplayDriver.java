@@ -1,6 +1,6 @@
 /**
  * Output driver for the Main Entrance Availability Display.
- * Receives signals from MainEntryExitGateController and updates the main
+ * Receives signal from MainEntryExitGateController and updates the main
  * entrance LCD screen showing total occupancy and per-floor availability.
  *
  * @author Jake Alsept
@@ -13,7 +13,7 @@ public class MainEntranceDisplayDriver {
      * MainEntranceDisplayDriver Constructor.
      *
      * @param floor - the parking floor pane containing the visual
-     *             display elements.
+     *                display elements.
      */
     public MainEntranceDisplayDriver(ParkingFloorPane floor) {
         this.floor = floor;
@@ -24,7 +24,7 @@ public class MainEntranceDisplayDriver {
      * structure occupancy, including per-floor availability.
      *
      * @param totalAvailable - total number of available spots in the
-     *                       entire structure.
+     *                         entire structure.
      * @param totalCapacity  - total capacity of the structure.
      * @param floorAvailable - array containing available spots per floor.
      */
@@ -61,9 +61,10 @@ public class MainEntranceDisplayDriver {
     }
 
     /**
-     * Updates the main entrance display showing a " STRUCTURE FULL" message.
+     * Updates the main entrance display showing a "STRUCTURE FULL" message.
      * This is called when the structure reaches maximum capacity and entry
      * should be denied.
+     * Unused in demo but would be used in real implementation.
      */
     public void displayMaxCapacityMessage() {
         javafx.application.Platform.runLater(() -> {
