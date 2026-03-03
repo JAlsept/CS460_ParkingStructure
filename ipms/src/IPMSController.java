@@ -19,12 +19,22 @@ public class IPMSController {
     public IPMSController(int totalSpots, int[] floorLayout) {
         this.totalCapacity = totalSpots;
         this.totalAvailable = totalSpots;
-        this.totalSpots = totalSpots;
         this.floorAvailable = floorLayout.clone();
         this.floorCapacity = floorLayout.clone();
         this.spotOccupied = new HashMap<>();
         this.spotToFloor = new HashMap<>();
         this.systemOperational = true;
+
+        // Keep this to initialize all spots as vacat
+        int spotID = 0;
+        for (int floor = 0; floor < floorLayout.length; floor++) {
+            for (int i = 0; i < floorLayout[floor]; i++) {
+                spotToFloor.put(spotID, floor);
+                spotOccupied.put(spotID, false);
+                spotID++;
+            }
+        }
+
 
         dataStore = new DataStore();
         gateController = new MainEntryExitGateController(this);
@@ -99,19 +109,7 @@ public class IPMSController {
                 newFloorAvailabile[floor]++;
             }
         }
-        totalAvailable = totalCapacity - occupied;
-
-        // recalculate per-floor counts from spotToFloor map
-        int[] updatedFloor = new int[floorAvailable.length];
-        for (Map.Entry<Integer, Boolean> entry : spotOccupied.entrySet()) {
-            Integer floor = spotToFloor.get(entry.getKey());
-            if (floor != null && !entry.getValue()) {
-                updatedFloor[floor]++;
-            }
-        }
-        floorAvailable = updatedFloor;
-
-        this.floorAvailable =newFloorAvailabile;
+        this.floorAvailable = newFloorAvailabile;
         int total = 0;
         for(int count :floorAvailable){
             total += count;

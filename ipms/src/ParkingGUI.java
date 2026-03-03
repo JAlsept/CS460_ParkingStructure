@@ -91,26 +91,17 @@ public class ParkingGUI extends Application {
                 javafx.application.Platform.runLater(() -> refreshDisplays());
             }
         };
-        gateController = new MainEntryExitGateController(ipms) {
-            @Override public void raiseMainGate() {
-                super.raiseMainGate();
-                javafx.application.Platform.runLater(() -> floor.animateEntryGate(true));
-            }
-            @Override public void closeMainGate() {
-                super.closeMainGate();
-                javafx.application.Platform.runLater(() -> floor.animateEntryGate(false));
-            }
-            @Override public void updateDisplay(int total, int[] floors) {
-                javafx.application.Platform.runLater(() -> refreshDisplays());
-            }
-        };
-        occupancyController = new ParkingSpotOccupancyController(ipms) {
-            @Override public void setIndicatorLight(int spotID, boolean occupied) {
-                javafx.application.Platform.runLater(() -> floor.updateSpotLight(spotID, occupied));
-            }
-        };
+        gateController = new MainEntryExitGateController(ipms);
+        occupancyController = new ParkingSpotOccupancyController(ipms);
+
+        GateOutputDriver gateDriver = new GateOutputDriver(floor);
+        ParkingSpotDisplayOutputDriver spotDriver = new ParkingSpotDisplayOutputDriver(floor);
+
+        gateController.setGateOutputDriver(gateDriver);
+        occupancyController.setDisplayOutputDriver(spotDriver);
+
         entrySensorDriver = new MainEntryExitSensorDriver(gateController);
-        spotSensorDriver  = new ParkingSpotOccupancySensorDriver(occupancyController);
+        spotSensorDriver = new ParkingSpotOccupancySensorDriver(occupancyController);
     }
 
     // -------------------------------------------------
