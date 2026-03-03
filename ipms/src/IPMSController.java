@@ -99,22 +99,24 @@ public class IPMSController {
     }
 
     public void updateAvailability() {
-        int[] newFloorAvailabile = new int[floorAvailable.length];
-        for(Map.Entry<Integer,Boolean> entry: spotOccupied.entrySet()){
+        // recalculate per-floor counts from spotToFloor map
+        int[] newFloorAvailable = new int[floorAvailable.length];
+        for (Map.Entry<Integer, Boolean> entry : spotOccupied.entrySet()) {
             int spotID = entry.getKey();
             boolean isOccupied = entry.getValue();
             int floor = spotToFloor.get(spotID);
-
-            if(!isOccupied){
-                newFloorAvailabile[floor]++;
+            if (!isOccupied) {
+                newFloorAvailable[floor]++;
             }
         }
-        this.floorAvailable = newFloorAvailabile;
+        floorAvailable = newFloorAvailable;
+
+        // sum floor counts for total
         int total = 0;
-        for(int count :floorAvailable){
+        for (int count : floorAvailable) {
             total += count;
         }
-        this.totalAvailable = total;
+        totalAvailable = total;
         dataStore.storeCapacity();
         gateController.updateDisplay(totalAvailable, floorAvailable);
     }
@@ -142,12 +144,12 @@ public class IPMSController {
      * Returns the floor a given spot is on, -1 if none
      * @return
      */
-    public int getFloorForSpot(int spotID){
-        return spotToFloor.getOrDefault(spotID,-1);
+    public int getFloorForSpot(int spotID) {
+        return spotToFloor.getOrDefault(spotID, -1);
     }
 
     // true if a specific spot is available
-    public boolean isSpotAvailable(int spotID){
+    public boolean isSpotAvailable(int spotID) {
         return spotOccupied.containsKey(spotID) && !spotOccupied.get(spotID);
     }
 
@@ -155,8 +157,7 @@ public class IPMSController {
      * Get total number of spots
      * @return total number of spots
      */
-    public int getTotalSpots(){
+    public int getTotalSpots() {
         return spotOccupied.size();
     }
-
 }
