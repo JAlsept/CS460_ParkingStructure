@@ -1,7 +1,9 @@
 /**
  * Output driver for the Floor Availability Display.
- * Receives signals from MainEntryExitGateController and updates the floor-level
- * LCD display showing availability for the specific floor.
+ * Receives signal from MainEntryExitGateController and updates the floor-level
+ * LCD screen showing availability for the specific floor.
+ *
+ * @author Jake Alsept
  */
 public class FloorDisplayDriver {
 
@@ -23,6 +25,8 @@ public class FloorDisplayDriver {
      * Updates the floor availability display with current occupancy
      * information.
      *
+     * totalSpots is unused in demo but would be used in real implementation.
+     *
      * @param availableSpots - number of available spots on this specific floor.
      * @param totalSpots - total number of spots on this floor.
      */
@@ -41,6 +45,7 @@ public class FloorDisplayDriver {
 
     /**
      * Gets the floor number this driver is associated with.
+     * Unused in demo but would be used in real implementation.
      * @return - floor number.
      */
     public int getFloorNumber() {

@@ -1,7 +1,9 @@
 /**
  * Output driver for the Main Entrance Availability Display.
  * Receives signals from MainEntryExitGateController and updates the main
- * entrance LCD display showing total occupancy and per-floor availability.
+ * entrance LCD screen showing total occupancy and per-floor availability.
+ *
+ * @author Jake Alsept
  */
 public class MainEntranceDisplayDriver {
 

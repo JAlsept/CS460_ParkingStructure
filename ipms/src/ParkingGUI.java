@@ -71,7 +71,8 @@ public class ParkingGUI extends Application {
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
-        refreshDisplays();
+        updateSidePanelCount();
+        updateAllDisplays();
     }
 
     // -------------------------------------------------
@@ -86,18 +87,26 @@ public class ParkingGUI extends Application {
     private void initSystem() {
         int[] layout = {ParkingFloorPane.TOTAL_SPOTS};
         ipms = new IPMSController(ParkingFloorPane.TOTAL_SPOTS, layout) {
-            @Override public void updateAvailability() {
+            @Override
+            public void updateAvailability() {
                 super.updateAvailability();
-                javafx.application.Platform.runLater(() -> refreshDisplays());
+                javafx.application.Platform.runLater(() -> {
+                    updateSidePanelCount();
+                });
             }
         };
-        gateController = new MainEntryExitGateController(ipms);
-        occupancyController = new ParkingSpotOccupancyController(ipms);
+
+        gateController = ipms.gateController;
+        occupancyController = ipms.occupancyController;
 
         GateOutputDriver gateDriver = new GateOutputDriver(floor);
         ParkingSpotDisplayOutputDriver spotDriver = new ParkingSpotDisplayOutputDriver(floor);
+        MainEntranceDisplayDriver entranceDisplayDriver = new MainEntranceDisplayDriver(floor);
+        FloorDisplayDriver floorDisplayDriver = new FloorDisplayDriver(floor, 1);
 
         gateController.setGateOutputDriver(gateDriver);
+        gateController.setMainEntranceDisplayDriver(entranceDisplayDriver);
+        gateController.setFloorDisplayDriver(floorDisplayDriver);
         occupancyController.setDisplayOutputDriver(spotDriver);
 
         entrySensorDriver = new MainEntryExitSensorDriver(gateController);
@@ -297,7 +306,6 @@ public class ParkingGUI extends Application {
         floor.animateExitGate(false);
         logBox.getChildren().clear();
         addLog("↺ System reset — all spots cleared");
-        refreshDisplays();
     }
 
     // -------------------------------------------------
@@ -305,24 +313,22 @@ public class ParkingGUI extends Application {
     // -------------------------------------------------
 
     /**
-     * Refreshes all availability displays based on current spot light states.
+     * Updates all displays through the proper output drivers.
+     * This is called when we need to force a refresh.
      */
-    private void refreshDisplays() {
+    private void updateAllDisplays() {
+        if (gateController != null) {
+            gateController.updateDisplay(ipms.totalAvailable, ipms.floorAvailable);
+        }
+    }
+
+    /**
+     * Updates just the side panel count (this is GUI-specific, not part of the display drivers)
+     */
+    private void updateSidePanelCount() {
         int a = floor.countAvailableSpots();
         availableCountLabel.setText(String.valueOf(a));
         availableCountLabel.setTextFill(a == 0 ? ParkingFloorPane.SPOT_OCCUPIED : ParkingFloorPane.SPOT_EMPTY);
-        if (a == 0) {
-            floor.entranceDisplayTotal.setText("NO AVAILABILITY");  floor.entranceDisplayTotal.setTextFill(ParkingFloorPane.SPOT_OCCUPIED);
-            floor.entranceDisplayFloor.setText("STRUCTURE FULL");   floor.entranceDisplayFloor.setTextFill(ParkingFloorPane.SPOT_OCCUPIED);
-            floor.floorDisplayLabel.setText("FLOOR FULL");          floor.floorDisplayLabel.setTextFill(ParkingFloorPane.SPOT_OCCUPIED);
-        } else {
-            floor.entranceDisplayTotal.setText("TOTAL: " + a + " / " + ParkingFloorPane.TOTAL_SPOTS);
-            floor.entranceDisplayTotal.setTextFill(Color.web("#58ff8a"));
-            floor.entranceDisplayFloor.setText("FLOOR 1: " + a + " AVAIL");
-            floor.entranceDisplayFloor.setTextFill(ParkingFloorPane.TEXT_PRIMARY);
-            floor.floorDisplayLabel.setText("AVAILABLE: " + a);
-            floor.floorDisplayLabel.setTextFill(Color.web("#58ff8a"));
-        }
     }
 
     private void addLog(String msg) {
