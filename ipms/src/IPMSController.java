@@ -95,7 +95,7 @@ public class IPMSController {
 
     public void authorizeExit() {
         // just open the gate, occupancy updated by spot sensors
-        gateController.raiseMainGate();
+        gateController.raiseExitGate();
     }
 
     public void updateAvailability() {

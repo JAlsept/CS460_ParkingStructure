@@ -212,32 +212,27 @@ public class ParkingGUI extends Application {
                 new KeyFrame(Duration.millis(700), new KeyValue(floor.entryCar.layoutXProperty(), gateX - 100))
         );
         approach.setOnFinished(e -> {
-            PauseTransition pauseBeforeOpen = new PauseTransition(Duration.millis(800));
-            pauseBeforeOpen.setOnFinished(ev1 -> {
-                floor.animateEntryGate(true);
-                PauseTransition pauseAfterOpen = new PauseTransition(Duration.millis(500));
-                pauseAfterOpen.setOnFinished(ev2 -> {
-                    Timeline drive = new Timeline(
-                            new KeyFrame(Duration.ZERO,       new KeyValue(floor.entryCar.layoutXProperty(), gateX - 100)),
-                            new KeyFrame(Duration.millis(600), new KeyValue(floor.entryCar.layoutXProperty(), ParkingFloorPane.FW + 80))
-                    );
-                    drive.setOnFinished(evv -> {
-                        spotSensorDriver.onSensorReading(spot, true);
-                        floor.updateSpotLight(spot, true);
-                        addLog("✓ Parked in spot P" + (spot + 1));
-                        floor.entryCar.setLayoutX(-70);
-                        PauseTransition close = new PauseTransition(Duration.millis(400));
-                        close.setOnFinished(ec -> {
-                            gateController.closeMainGate();
-                            animating = false;
-                        });
-                        close.play();
+            PauseTransition pauseAfterOpen = new PauseTransition(Duration.millis(800));
+            pauseAfterOpen.setOnFinished(ev2 -> {
+                Timeline drive = new Timeline(
+                        new KeyFrame(Duration.ZERO,       new KeyValue(floor.entryCar.layoutXProperty(), gateX - 100)),
+                        new KeyFrame(Duration.millis(600), new KeyValue(floor.entryCar.layoutXProperty(), ParkingFloorPane.FW + 80))
+                );
+                drive.setOnFinished(evv -> {
+                    spotSensorDriver.onSensorReading(spot, true);
+                    floor.updateSpotLight(spot, true);
+                    addLog("✓ Parked in spot P" + (spot + 1));
+                    floor.entryCar.setLayoutX(-70);
+                    PauseTransition close = new PauseTransition(Duration.millis(400));
+                    close.setOnFinished(ec -> {
+                        gateController.closeMainGate();
+                        animating = false;
                     });
-                    drive.play();
+                    close.play();
                 });
-                pauseAfterOpen.play();
+                drive.play();
             });
-            pauseBeforeOpen.play();
+            pauseAfterOpen.play();
         });
         approach.play();
     }
@@ -252,6 +247,7 @@ public class ParkingGUI extends Application {
 
         animating = true;
         addLog("← Exit sensor triggered");
+        entrySensorDriver.onExitSensorTriggered();
         floor.exitCar.setLayoutX(-70);
 
         double gateX = ParkingFloorPane.FW * 0.38;
@@ -261,32 +257,27 @@ public class ParkingGUI extends Application {
                 new KeyFrame(Duration.millis(700), new KeyValue(floor.exitCar.layoutXProperty(), gateX - 100))
         );
         approach.setOnFinished(e -> {
-            PauseTransition pauseBeforeOpen = new PauseTransition(Duration.millis(800));
-            pauseBeforeOpen.setOnFinished(ev1 -> {
-                floor.animateExitGate(true);
+            PauseTransition pauseAfterOpen = new PauseTransition(Duration.millis(800));
+            pauseAfterOpen.setOnFinished(ev2 -> {
                 spotSensorDriver.onSensorReading(spot, false);
                 floor.updateSpotLight(spot, false);
                 addLog("✓ Spot P" + (spot + 1) + " now available");
-                PauseTransition pauseAfterOpen = new PauseTransition(Duration.millis(500));
-                pauseAfterOpen.setOnFinished(ev2 -> {
-                    Timeline drive = new Timeline(
-                            new KeyFrame(Duration.ZERO,       new KeyValue(floor.exitCar.layoutXProperty(), gateX - 100)),
-                            new KeyFrame(Duration.millis(700), new KeyValue(floor.exitCar.layoutXProperty(), ParkingFloorPane.FW + 80))
-                    );
-                    drive.setOnFinished(evv -> {
-                        floor.exitCar.setLayoutX(ParkingFloorPane.FW + 100);
-                        PauseTransition close = new PauseTransition(Duration.millis(400));
-                        close.setOnFinished(ec -> {
-                            floor.animateExitGate(false);
-                            animating = false;
-                        });
-                        close.play();
+                Timeline drive = new Timeline(
+                        new KeyFrame(Duration.ZERO,       new KeyValue(floor.exitCar.layoutXProperty(), gateX - 100)),
+                        new KeyFrame(Duration.millis(700), new KeyValue(floor.exitCar.layoutXProperty(), ParkingFloorPane.FW + 80))
+                );
+                drive.setOnFinished(evv -> {
+                    floor.exitCar.setLayoutX(ParkingFloorPane.FW + 100);
+                    PauseTransition close = new PauseTransition(Duration.millis(400));
+                    close.setOnFinished(ec -> {
+                        gateController.closeExitGate();
+                        animating = false;
                     });
-                    drive.play();
+                    close.play();
                 });
-                pauseAfterOpen.play();
+                drive.play();
             });
-            pauseBeforeOpen.play();
+            pauseAfterOpen.play();
         });
         approach.play();
     }
