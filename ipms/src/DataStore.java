@@ -1,13 +1,18 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.io.*;
+import java.nio.file.*;
 
 public class DataStore {
 
-    // just storing in memory for now
-    // TODO: hook up to actual DB or file system
     List<Event> eventLog;
     String lastCapacitySnapshot;
     String lastSystemState;
+
+    // files to write state to
+    static final String CAPACITY_FILE = "capacity_state.txt";
+    static final String SYSTEM_FILE = "system_state.txt";
+    static final String EVENT_LOG_FILE = "event_log.txt";
 
     public DataStore() {
         eventLog = new ArrayList<>();
@@ -16,6 +21,10 @@ public class DataStore {
     public boolean logEvent(Event e) {
         try {
             eventLog.add(e);
+            // append event to log file
+            String line = e.timestamp + " | " + e.type + " | spotID=" + e.spotID + "\n";
+            Files.write(Paths.get(EVENT_LOG_FILE), line.getBytes(),
+                StandardOpenOption.CREATE, StandardOpenOption.APPEND);
             System.out.println("logged event: " + e.type);
             return true;
         } catch (Exception ex) {
@@ -25,14 +34,41 @@ public class DataStore {
     }
 
     public boolean storeCapacity() {
-        // TODO: actually persist this somewhere
-        lastCapacitySnapshot = "capacity saved at " + System.currentTimeMillis();
-        return true;
+        try {
+            lastCapacitySnapshot = "capacity saved at " + System.currentTimeMillis();
+            Files.write(Paths.get(CAPACITY_FILE), lastCapacitySnapshot.getBytes(),
+                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            return true;
+        } catch (Exception ex) {
+            System.out.println("failed to store capacity: " + ex.getMessage());
+            return false;
+        }
     }
 
     public boolean storeSystemState() {
-        // TODO: serialize full system state properly
-        lastSystemState = "state saved at " + System.currentTimeMillis();
-        return true;
+        try {
+            lastSystemState = "state saved at " + System.currentTimeMillis();
+            Files.write(Paths.get(SYSTEM_FILE), lastSystemState.getBytes(),
+                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            return true;
+        } catch (Exception ex) {
+            System.out.println("failed to store system state: " + ex.getMessage());
+            return false;
+        }
+    }
+
+    // returns last saved capacity snapshot string
+    public String getLastCapacitySnapshot() {
+        return lastCapacitySnapshot;
+    }
+
+    // returns last saved system state string
+    public String getLastSystemState() {
+        return lastSystemState;
+    }
+
+    // returns a copy of the full event log
+    public List<Event> getEventLog() {
+        return new ArrayList<>(eventLog);
     }
 }
