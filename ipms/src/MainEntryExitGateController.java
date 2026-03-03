@@ -13,6 +13,9 @@ public class MainEntryExitGateController {
     MainGateMechanismDriver gateDriver;
     GateOutputDriver gateOutputDriver;
 
+    MainEntranceDisplayDriver entranceDisplayDriver;
+    FloorDisplayDriver floorDisplayDriver;
+
     public MainEntryExitGateController(IPMSController ipms) {
         this.ipms = ipms;
         this.gateOpen = false;
@@ -29,6 +32,14 @@ public class MainEntryExitGateController {
     public void entrySensorTriggered() {
         entrySensorActive = true;
         sendEventToIPMS(new Event("ENTRY"));
+    }
+
+    public void setMainEntranceDisplayDriver(MainEntranceDisplayDriver driver) {
+        this.entranceDisplayDriver = driver;
+    }
+
+    public void setFloorDisplayDriver(FloorDisplayDriver driver) {
+        this.floorDisplayDriver = driver;
     }
 
    // Called when exit sensor detects a vehicle; sends EXIT event to IPMS
@@ -66,8 +77,21 @@ public class MainEntryExitGateController {
         }
     }
 
-    // Updates availability display TODO: wire to display output driver when implemented.
     public void updateDisplay(int totalAvailable, int[] floorAvailable) {
-        System.out.println("display updated: " + totalAvailable + " spots available");
+        System.out.println("display updated: " + totalAvailable +
+                " spots available");
+
+        if (entranceDisplayDriver != null) {
+            entranceDisplayDriver.updateEntranceDisplay(
+                    totalAvailable,
+                    ipms.getTotalSpots(),
+                    floorAvailable
+            );
+        }
+
+        if (floorDisplayDriver != null && floorAvailable.length > 0) {
+            floorDisplayDriver.updateFloorDisplay(floorAvailable[0],
+                    ipms.getTotalSpots());
+        }
     }
 }
