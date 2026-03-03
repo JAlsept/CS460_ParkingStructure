@@ -25,7 +25,7 @@ public class FloorDisplayDriver {
     /**
      * Updates the floor availability display with current occupancy
      * information.
-     * <p>
+     * 
      * totalSpots is unused in demo but would be used in real implementation.
      *
      * @param availableSpots - number of available spots on this specific floor.
