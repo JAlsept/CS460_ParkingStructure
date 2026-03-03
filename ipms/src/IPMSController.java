@@ -18,6 +18,7 @@ public class IPMSController {
     public IPMSController(int totalSpots, int[] floorLayout) {
         this.totalCapacity = totalSpots;
         this.totalAvailable = totalSpots;
+        this.totalSpots = totalSpots;
         this.floorAvailable = floorLayout.clone();
         this.spotOccupied = new HashMap<>();
         this.spotToFloor = new HashMap<>();
