@@ -6,6 +6,7 @@ public class IPMSController {
     int totalAvailable;
     int totalCapacity;
     int[] floorAvailable;
+    int[] floorCapacity;
     Map<Integer, Boolean> spotOccupied;
     Map<Integer, Integer> spotToFloor;
     boolean systemOperational;
@@ -20,6 +21,7 @@ public class IPMSController {
         this.totalAvailable = totalSpots;
         this.totalSpots = totalSpots;
         this.floorAvailable = floorLayout.clone();
+        this.floorCapacity = floorLayout.clone();
         this.spotOccupied = new HashMap<>();
         this.spotToFloor = new HashMap<>();
         this.systemOperational = true;
@@ -87,9 +89,15 @@ public class IPMSController {
     }
 
     public void updateAvailability() {
-        int occupied = 0;
-        for (boolean val : spotOccupied.values()) {
-            if (val) occupied++;
+        int[] newFloorAvailabile = new int[floorAvailable.length];
+        for(Map.Entry<Integer,Boolean> entry: spotOccupied.entrySet()){
+            int spotID = entry.getKey();
+            boolean isOccupied = entry.getValue();
+            int floor = spotToFloor.get(spotID);
+
+            if(!isOccupied){
+                newFloorAvailabile[floor]++;
+            }
         }
         totalAvailable = totalCapacity - occupied;
 
@@ -103,6 +111,12 @@ public class IPMSController {
         }
         floorAvailable = updatedFloor;
 
+        this.floorAvailable =newFloorAvailabile;
+        int total = 0;
+        for(int count :floorAvailable){
+            total += count;
+        }
+        this.totalAvailable = total;
         dataStore.storeCapacity();
         gateController.updateDisplay(totalAvailable, floorAvailable);
     }
@@ -125,4 +139,26 @@ public class IPMSController {
         }
         return sb.toString();
     }
+
+    /**
+     * Returns the floor a given spot is on, -1 if none
+     * @return
+     */
+    public int getFloorForSpot(int spotID){
+        return spotToFloor.getOrDefault(spotID,-1);
+    }
+
+    // true if a specific spot is available
+    public boolean isSpotAvailable(int spotID){
+        return spotOccupied.containsKey(spotID) && !spotOccupied.get(spotID);
+    }
+
+    /**
+     * Get total number of spots
+     * @return total number of spots
+     */
+    public int getTotalSpots(){
+        return spotOccupied.size();
+    }
+
 }

@@ -11,6 +11,7 @@ public class MainEntryExitGateController {
 
     IPMSController ipms;
     MainGateMechanismDriver gateDriver;
+    GateOutputDriver gateOutputDriver;
 
     public MainEntryExitGateController(IPMSController ipms) {
         this.ipms = ipms;
@@ -18,7 +19,13 @@ public class MainEntryExitGateController {
         this.gateDriver = new MainGateMechanismDriver();
     }
 
-    //Called when entry sensor detects a vehicle; sends ENTRY event to IPMS
+    //Links gate output dirver so that gate animations are sent to the GUI
+    // called from ParkingGUI.initSystem
+    public void setGateOutputDriver(GateOutputDriver driver){
+        this.gateOutputDriver = driver;
+    }
+
+    //Called when entry sensor detects a vehicle; sends ENTRY event to IPMS    //Called when entry sensor detects a vehicle; sends ENTRY event to IPMS
     public void entrySensorTriggered() {
         entrySensorActive = true;
         sendEventToIPMS(new Event("ENTRY"));
@@ -40,6 +47,11 @@ public class MainEntryExitGateController {
         gateDriver.openGate();
         gateOpen = true;
         System.out.println("gate opened");
+
+        //sends signal to physical hardware and Triggers GUI animation
+        if(gateOutputDriver != null){
+            gateOutputDriver.openEntryGate();
+        }
     }
 
     // Lowers the main gate via MainGateMechanismDriver and updates local state.
@@ -47,6 +59,11 @@ public class MainEntryExitGateController {
         gateDriver.closeGate();
         gateOpen = false;
         System.out.println("gate closed");
+
+        //sends signal to physical hardware and triggers GUI animation
+        if(gateOutputDriver != null){
+            gateOutputDriver.closeEntryGate();
+        }
     }
 
     // Updates availability display TODO: wire to display output driver when implemented.
