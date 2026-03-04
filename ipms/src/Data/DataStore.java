@@ -1,6 +1,7 @@
+package Data;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.io.*;
 import java.nio.file.*;
 
 public class DataStore {
@@ -21,12 +22,18 @@ public class DataStore {
     public boolean logEvent(Event e) {
         try {
             eventLog.add(e);
+
             // append event to log file
-            String line = e.timestamp + " | " + e.type + " | spotID=" + e.spotID + "\n";
+            String line = e.timestamp + " | " + e.type + " | spotID=" +
+                    e.spotID + "\n";
+
             Files.write(Paths.get(EVENT_LOG_FILE), line.getBytes(),
                 StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+
             System.out.println("logged event: " + e.type);
+
             return true;
+
         } catch (Exception ex) {
             System.out.println("failed to log event: " + ex.getMessage());
             return false;
@@ -35,10 +42,15 @@ public class DataStore {
 
     public boolean storeCapacity() {
         try {
-            lastCapacitySnapshot = "capacity saved at " + System.currentTimeMillis();
-            Files.write(Paths.get(CAPACITY_FILE), lastCapacitySnapshot.getBytes(),
-                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            lastCapacitySnapshot = "capacity saved at " +
+                    System.currentTimeMillis();
+
+            Files.write(Paths.get(CAPACITY_FILE),
+                    lastCapacitySnapshot.getBytes(), StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING);
+
             return true;
+
         } catch (Exception ex) {
             System.out.println("failed to store capacity: " + ex.getMessage());
             return false;
@@ -48,26 +60,40 @@ public class DataStore {
     public boolean storeSystemState() {
         try {
             lastSystemState = "state saved at " + System.currentTimeMillis();
+
             Files.write(Paths.get(SYSTEM_FILE), lastSystemState.getBytes(),
-                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING);
+
             return true;
+
         } catch (Exception ex) {
-            System.out.println("failed to store system state: " + ex.getMessage());
+            System.out.println("failed to store system state: " +
+                    ex.getMessage());
             return false;
         }
     }
 
-    // returns last saved capacity snapshot string
+    /**
+     *
+     * @return last saved capacity snapshot string.
+     */
     public String getLastCapacitySnapshot() {
         return lastCapacitySnapshot;
     }
 
-    // returns last saved system state string
+    /**
+     *
+     * @return last saved system state string.
+     */
     public String getLastSystemState() {
         return lastSystemState;
     }
 
-    // returns a copy of the full event log
+    /**
+     *
+     * @return returns a copy of the full event log.
+     */
     public List<Event> getEventLog() {
         return new ArrayList<>(eventLog);
     }

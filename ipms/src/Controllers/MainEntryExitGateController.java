@@ -1,7 +1,15 @@
+package Controllers;
+
+import Data.Event;
+import Drivers.output.FloorDisplayDriver;
+import Drivers.output.GateOutputDriver;
+import Drivers.output.MainEntranceDisplayDriver;
+import Drivers.output.MainGateMechanismDriver;
+
 /**
- * MainEntryExitGateController - coordinates entry/exit sensors, gate mechanism,
+ * MainEntryExitGateController coordinates entry/exit sensors, gate mechanism,
  * and IPMS. Receives sensor events, forwards them to IPMSController, and
- * controls the physical gate via MainGateMechanismDriver.
+ * controls the physical gate via Drivers.output.MainGateMechanismDriver.
  */
 public class MainEntryExitGateController {
 
@@ -17,19 +25,26 @@ public class MainEntryExitGateController {
     FloorDisplayDriver floorDisplayDriver;
 
     public MainEntryExitGateController(IPMSController ipms) {
+
         this.ipms = ipms;
         this.gateOpen = false;
         this.gateDriver = new MainGateMechanismDriver();
     }
 
-    //Links gate output dirver so that gate animations are sent to the GUI
-    // called from ParkingGUI.initSystem
+    /**
+     * Links gate output driver so that gate animations are sent to the GUI.
+     * Called from GUI.ParkingGUI.initSystem.
+     * @param driver
+     */
     public void setGateOutputDriver(GateOutputDriver driver){
         this.gateOutputDriver = driver;
     }
 
-    //Called when entry sensor detects a vehicle; sends ENTRY event to IPMS    //Called when entry sensor detects a vehicle; sends ENTRY event to IPMS
+    /**
+     * Called when entry sensor detects a vehicle; sends ENTRY event to IPMS.
+     */
     public void entrySensorTriggered() {
+
         entrySensorActive = true;
         sendEventToIPMS(new Event("ENTRY"));
     }
@@ -42,18 +57,27 @@ public class MainEntryExitGateController {
         this.floorDisplayDriver = driver;
     }
 
-   // Called when exit sensor detects a vehicle; sends EXIT event to IPMS
+    /**
+     * Called when exit sensor detects a vehicle; sends EXIT event to IPMS.
+     */
     public void exitSensorTriggered() {
+
         exitSensorActive = true;
         sendEventToIPMS(new Event("EXIT"));
     }
 
-    // Forwards events to the main IPMS controller
+    /**
+     * Forwards events to the main IPMS controller
+     * @param e
+     */
     public void sendEventToIPMS(Event e) {
         ipms.processInput(e);
     }
 
-    // Raises the main gate via MainGateMechanismDriver and updates local state.
+    /**
+     * Raises the main gate via Drivers.output.MainGateMechanismDriver and
+     * updates local state.
+     */
     public void raiseMainGate() {
         gateDriver.openGate();
         gateOpen = true;
@@ -65,7 +89,9 @@ public class MainEntryExitGateController {
         }
     }
 
-    // Lowers the main gate via MainGateMechanismDriver and updates local state.
+    /**
+     * Lowers the main gate via MainGateMechanismDriver and updates local state.
+     */
     public void closeMainGate() {
         gateDriver.closeGate();
         gateOpen = false;
@@ -78,6 +104,7 @@ public class MainEntryExitGateController {
     }
 
     public void updateDisplay(int totalAvailable, int[] floorAvailable) {
+
         System.out.println("display updated: " + totalAvailable +
                 " spots available");
 

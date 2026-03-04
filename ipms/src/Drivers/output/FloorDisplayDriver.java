@@ -1,17 +1,19 @@
+package Drivers.output;
+
+import GUI.ParkingFloorPane;
+
 /**
  * Output driver for the Floor Availability Display.
- * Receives signal from MainEntryExitGateController and updates the floor-level
- * LCD screen showing availability for the specific floor.
- *
- * @author Jake Alsept
+ * Receives signal from Controllers.MainEntryExitGateController and updates
+ * the floor-level LCD screen showing availability for the specific floor.
  */
 public class FloorDisplayDriver {
 
-    private ParkingFloorPane floor;
-    private int floorNumber;
+    private final ParkingFloorPane floor;
+    private final int floorNumber;
 
     /**
-     * FloorDisplayDriver Constructor.
+     * Drivers.output.FloorDisplayDriver Constructor.
      *
      * @param floor       - the parking floor pane containing the visual
      *                      display elements.
