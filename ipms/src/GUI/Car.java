@@ -1,14 +1,19 @@
+package GUI;
+
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 
 /**
- * Car - visual representation of a vehicle in the gate lanes.
- *
+ * Car is the visual representation of a vehicle in the gate lanes.
  */
 public class Car extends Group {
 
+    /**
+     *
+     */
     public Car() {
+
         // car body
         Rectangle body = new Rectangle(0, 6, 56, 28);
         body.setArcWidth(8); body.setArcHeight(8);

@@ -1,3 +1,14 @@
+package GUI;
+
+import Controllers.IPMSController;
+import Controllers.MainEntryExitGateController;
+import Controllers.ParkingSpotOccupancyController;
+import Drivers.input.MainEntryExitSensorDriver;
+import Drivers.input.ParkingSpotOccupancySensorDriver;
+import Drivers.output.FloorDisplayDriver;
+import Drivers.output.GateOutputDriver;
+import Drivers.output.MainEntranceDisplayDriver;
+import Drivers.output.ParkingSpotDisplayOutputDriver;
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -14,9 +25,10 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
- * ParkingGUI - main JavaFX application entry point for the IPMS Parking Structure Monitor.
- * Wires together the backend controllers, floor pane, side panel, and button handlers.
- * Manages car entry/exit animations and keeps the GUI in sync with backend state.
+ * GUI.ParkingGUI - main JavaFX application entry point for the IPMS Parking
+ * Structure Monitor. Wires together the backend controllers, floor pane,
+ * side panel, and button handlers. Manages car entry/exit animations and
+ * keeps the GUI in sync with backend state.
  */
 public class ParkingGUI extends Application {
 
@@ -24,7 +36,6 @@ public class ParkingGUI extends Application {
     private IPMSController ipms;
     private MainEntryExitGateController gateController;
     private MainEntryExitSensorDriver entrySensorDriver;
-    private ParkingSpotOccupancyController occupancyController;
     private ParkingSpotOccupancySensorDriver spotSensorDriver;
 
     // floor pane handles all visual components
@@ -34,8 +45,8 @@ public class ParkingGUI extends Application {
     private boolean animating = false;
 
     // side panel labels
-    private Label      availableCountLabel;
-    private VBox       logBox;
+    private Label availableCountLabel;
+    private VBox logBox;
     private ScrollPane logScroll;
 
     // -------------------------------------------------
@@ -44,11 +55,15 @@ public class ParkingGUI extends Application {
 
     @Override
     public void start(Stage stage) {
+
         floor = new ParkingFloorPane();
         initSystem();
 
         BorderPane root = new BorderPane();
-        root.setBackground(new Background(new BackgroundFill(ParkingFloorPane.BG_DARK, CornerRadii.EMPTY, Insets.EMPTY)));
+        root.setBackground
+                (new Background(new BackgroundFill(ParkingFloorPane.BG_DARK,
+                        CornerRadii.EMPTY, Insets.EMPTY)));
+
         root.setPadding(new Insets(16));
         root.setTop(buildTitleBar());
         root.setLeft(buildSidePanel());
@@ -81,28 +96,36 @@ public class ParkingGUI extends Application {
 
     /**
      * Initializes backend controllers and wires GUI callbacks.
-     * Controllers are overridden to trigger GUI updates when backend state changes.
-     * These overrides are a temporary workaround until output drivers are implemented.
+     * Controllers are overridden to trigger GUI updates when backend state
+     * changes. These overrides are a temporary workaround until output
+     * drivers are implemented.
      */
     private void initSystem() {
+
         int[] layout = {ParkingFloorPane.TOTAL_SPOTS};
         ipms = new IPMSController(ParkingFloorPane.TOTAL_SPOTS, layout) {
             @Override
             public void updateAvailability() {
                 super.updateAvailability();
-                javafx.application.Platform.runLater(() -> {
-                    updateSidePanelCount();
-                });
+                javafx.application.Platform.runLater(() ->
+                        updateSidePanelCount());
             }
         };
 
         gateController = ipms.gateController;
-        occupancyController = ipms.occupancyController;
+        ParkingSpotOccupancyController occupancyController =
+                ipms.occupancyController;
 
         GateOutputDriver gateDriver = new GateOutputDriver(floor);
-        ParkingSpotDisplayOutputDriver spotDriver = new ParkingSpotDisplayOutputDriver(floor);
-        MainEntranceDisplayDriver entranceDisplayDriver = new MainEntranceDisplayDriver(floor);
-        FloorDisplayDriver floorDisplayDriver = new FloorDisplayDriver(floor, 1);
+
+        ParkingSpotDisplayOutputDriver spotDriver =
+                new ParkingSpotDisplayOutputDriver(floor);
+
+        MainEntranceDisplayDriver entranceDisplayDriver =
+                new MainEntranceDisplayDriver(floor);
+
+        FloorDisplayDriver floorDisplayDriver =
+                new FloorDisplayDriver(floor, 1);
 
         gateController.setGateOutputDriver(gateDriver);
         gateController.setMainEntranceDisplayDriver(entranceDisplayDriver);
@@ -110,7 +133,9 @@ public class ParkingGUI extends Application {
         occupancyController.setDisplayOutputDriver(spotDriver);
 
         entrySensorDriver = new MainEntryExitSensorDriver(gateController);
-        spotSensorDriver = new ParkingSpotOccupancySensorDriver(occupancyController);
+
+        spotSensorDriver =
+                new ParkingSpotOccupancySensorDriver(occupancyController);
     }
 
     // -------------------------------------------------
@@ -121,9 +146,11 @@ public class ParkingGUI extends Application {
         HBox bar = new HBox();
         bar.setAlignment(Pos.CENTER_LEFT);
         bar.setPadding(new Insets(0, 0, 12, 0));
-        Label title = lbl("IPMS  //  Parking Structure Monitor  //  Floor 1", "Menlo", 13, true, ParkingFloorPane.TEXT_PRIMARY);
+        Label title = lbl("IPMS  //  Parking Structure Monitor  //  Floor 1",
+                13, true, ParkingFloorPane.TEXT_PRIMARY);
         Region sp = new Region(); HBox.setHgrow(sp, Priority.ALWAYS);
-        Label sys = lbl("● SYSTEM OPERATIONAL", "Menlo", 11, false, ParkingFloorPane.SPOT_EMPTY);
+        Label sys = lbl("● SYSTEM OPERATIONAL", 11, false,
+                ParkingFloorPane.SPOT_EMPTY);
         bar.getChildren().addAll(title, sp, sys);
         return bar;
     }
@@ -137,19 +164,30 @@ public class ParkingGUI extends Application {
         panel.setPrefWidth(200);
         panel.setPadding(new Insets(0, 14, 0, 0));
 
-        VBox countBox = floor.vbox(12, ParkingFloorPane.BG_PANEL);
-        Label ct = lbl("AVAILABLE SPACES", "Menlo", 10, true, ParkingFloorPane.TEXT_MUTED);
-        availableCountLabel = lbl(String.valueOf(ParkingFloorPane.TOTAL_SPOTS), "Menlo", 42, true, ParkingFloorPane.SPOT_EMPTY);
-        Label tot = lbl("of " + ParkingFloorPane.TOTAL_SPOTS + " total", "Menlo", 10, false, ParkingFloorPane.TEXT_MUTED);
+        VBox countBox = floor.vbox(12);
+        Label ct = lbl("AVAILABLE SPACES", 10, true,
+                ParkingFloorPane.TEXT_MUTED);
+
+        availableCountLabel = lbl(String.valueOf(ParkingFloorPane.TOTAL_SPOTS),
+                42, true, ParkingFloorPane.SPOT_EMPTY);
+
+        Label tot = lbl("of " + ParkingFloorPane.TOTAL_SPOTS + " total",
+                10, false, ParkingFloorPane.TEXT_MUTED);
+
         countBox.getChildren().addAll(ct, availableCountLabel, tot);
 
-        VBox legendBox = floor.vbox(8, ParkingFloorPane.BG_PANEL);
-        Label lt = lbl("INDICATOR LIGHTS", "Menlo", 10, true, ParkingFloorPane.TEXT_MUTED);
-        legendBox.getChildren().addAll(lt,
-                lbl("● GREEN — Available", "Menlo", 11, false, ParkingFloorPane.SPOT_EMPTY),
-                lbl("● RED   — Occupied",  "Menlo", 11, false, ParkingFloorPane.SPOT_OCCUPIED));
+        VBox legendBox = floor.vbox(8);
+        Label lt = lbl("INDICATOR LIGHTS", 10, true,
+                ParkingFloorPane.TEXT_MUTED);
 
-        Label logTitle = lbl("EVENT LOG", "Menlo", 10, true, ParkingFloorPane.TEXT_MUTED);
+        legendBox.getChildren().addAll(lt,
+                lbl("● GREEN — Available", 11, false,
+                        ParkingFloorPane.SPOT_EMPTY),
+                lbl("● RED   — Occupied", 11, false,
+                        ParkingFloorPane.SPOT_OCCUPIED));
+
+        Label logTitle = lbl("EVENT LOG", 10, true,
+                ParkingFloorPane.TEXT_MUTED);
         logTitle.setPadding(new Insets(4, 0, 2, 0));
 
         logBox = new VBox(4);
@@ -163,9 +201,11 @@ public class ParkingGUI extends Application {
         logScroll.setFitToWidth(true);
         logScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         logScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        logScroll.setStyle("-fx-background: #161b22; -fx-background-color: #161b22; -fx-border-color: #161b22;");
+        logScroll.setStyle("-fx-background: #161b22; " +
+                "-fx-background-color: #161b22; -fx-border-color: #161b22;");
 
         panel.getChildren().addAll(countBox, legendBox, logTitle, logScroll);
+
         return panel;
     }
 
@@ -174,6 +214,7 @@ public class ParkingGUI extends Application {
     // -------------------------------------------------
 
     private HBox buildControls() {
+
         HBox bar = new HBox(12);
         bar.setAlignment(Pos.CENTER);
         bar.setPadding(new Insets(12, 0, 0, 0));
@@ -196,6 +237,7 @@ public class ParkingGUI extends Application {
      * and marks the first available spot as occupied.
      */
     private void handleCarEnter() {
+
         if (animating) { addLog("⚠ Animation in progress"); return; }
         int spot = floor.findFirstEmptySpot();
         if (spot < 0) { addLog("✗ Structure full — entry denied"); return; }
@@ -208,84 +250,122 @@ public class ParkingGUI extends Application {
         double gateX = ParkingFloorPane.FW * 0.38;
 
         Timeline approach = new Timeline(
-                new KeyFrame(Duration.ZERO,       new KeyValue(floor.entryCar.layoutXProperty(), -70)),
-                new KeyFrame(Duration.millis(700), new KeyValue(floor.entryCar.layoutXProperty(), gateX - 100))
+                new KeyFrame(Duration.ZERO,
+                        new KeyValue(floor.entryCar.layoutXProperty(), -70)),
+                new KeyFrame(Duration.millis(700),
+                        new KeyValue(floor.entryCar.layoutXProperty(),
+                                gateX - 100))
         );
         approach.setOnFinished(e -> {
-            PauseTransition pauseAfterOpen = new PauseTransition(Duration.millis(800));
-            pauseAfterOpen.setOnFinished(ev2 -> {
-                Timeline drive = new Timeline(
-                        new KeyFrame(Duration.ZERO,       new KeyValue(floor.entryCar.layoutXProperty(), gateX - 100)),
-                        new KeyFrame(Duration.millis(600), new KeyValue(floor.entryCar.layoutXProperty(), ParkingFloorPane.FW + 80))
-                );
-                drive.setOnFinished(evv -> {
-                    spotSensorDriver.onSensorReading(spot, true);
-                    floor.updateSpotLight(spot, true);
-                    addLog("✓ Parked in spot P" + (spot + 1));
-                    floor.entryCar.setLayoutX(-70);
-                    PauseTransition close = new PauseTransition(Duration.millis(400));
-                    close.setOnFinished(ec -> {
-                        gateController.closeMainGate();
-                        animating = false;
+            PauseTransition pauseBeforeOpen =
+                    new PauseTransition(Duration.millis(800));
+
+            pauseBeforeOpen.setOnFinished(ev1 -> {
+                floor.animateEntryGate(true);
+                PauseTransition pauseAfterOpen =
+                        new PauseTransition(Duration.millis(500));
+                pauseAfterOpen.setOnFinished(ev2 -> {
+                    Timeline drive = new Timeline(
+                            new KeyFrame(Duration.ZERO,
+                                    new KeyValue
+                                            (floor.entryCar.layoutXProperty(),
+                                                    gateX - 100)),
+                            new KeyFrame(Duration.millis(600),
+                                    new KeyValue
+                                            (floor.entryCar.layoutXProperty(),
+                                                    ParkingFloorPane.FW + 80))
+                    );
+                    drive.setOnFinished(evv -> {
+                        spotSensorDriver.onSensorReading(spot, true);
+                        floor.updateSpotLight(spot, true);
+                        addLog("✓ Parked in spot P" + (spot + 1));
+                        floor.entryCar.setLayoutX(-70);
+                        PauseTransition close =
+                                new PauseTransition(Duration.millis(400));
+                        close.setOnFinished(ec -> {
+                            gateController.closeMainGate();
+                            animating = false;
+                        });
+                        close.play();
                     });
-                    close.play();
+                    drive.play();
                 });
-                drive.play();
+                pauseAfterOpen.play();
             });
-            pauseAfterOpen.play();
+            pauseBeforeOpen.play();
         });
         approach.play();
     }
 
     /**
-     * Handles car exit — frees the first occupied spot, animates exit car through gate.
+     * Handles car exit — frees the first occupied spot,
+     * animates exit car through gate.
      */
     private void handleCarExit() {
+
         if (animating) { addLog("⚠ Animation in progress"); return; }
         int spot = floor.findFirstOccupiedSpot();
         if (spot < 0) { addLog("⚠ No cars inside to exit"); return; }
 
         animating = true;
         addLog("← Exit sensor triggered");
-        entrySensorDriver.onExitSensorTriggered();
         floor.exitCar.setLayoutX(-70);
 
         double gateX = ParkingFloorPane.FW * 0.38;
 
         Timeline approach = new Timeline(
-                new KeyFrame(Duration.ZERO,       new KeyValue(floor.exitCar.layoutXProperty(), -70)),
-                new KeyFrame(Duration.millis(700), new KeyValue(floor.exitCar.layoutXProperty(), gateX - 100))
+                new KeyFrame(Duration.ZERO,
+                        new KeyValue(floor.exitCar.layoutXProperty(), -70)),
+                new KeyFrame(Duration.millis(700),
+                        new KeyValue
+                                (floor.exitCar.layoutXProperty(), gateX - 100))
         );
         approach.setOnFinished(e -> {
-            PauseTransition pauseAfterOpen = new PauseTransition(Duration.millis(800));
-            pauseAfterOpen.setOnFinished(ev2 -> {
+            PauseTransition pauseBeforeOpen =
+                    new PauseTransition(Duration.millis(800));
+            pauseBeforeOpen.setOnFinished(ev1 -> {
+                floor.animateExitGate(true);
                 spotSensorDriver.onSensorReading(spot, false);
                 floor.updateSpotLight(spot, false);
                 addLog("✓ Spot P" + (spot + 1) + " now available");
-                Timeline drive = new Timeline(
-                        new KeyFrame(Duration.ZERO,       new KeyValue(floor.exitCar.layoutXProperty(), gateX - 100)),
-                        new KeyFrame(Duration.millis(700), new KeyValue(floor.exitCar.layoutXProperty(), ParkingFloorPane.FW + 80))
-                );
-                drive.setOnFinished(evv -> {
-                    floor.exitCar.setLayoutX(ParkingFloorPane.FW + 100);
-                    PauseTransition close = new PauseTransition(Duration.millis(400));
-                    close.setOnFinished(ec -> {
-                        gateController.closeExitGate();
-                        animating = false;
+                PauseTransition pauseAfterOpen =
+                        new PauseTransition(Duration.millis(500));
+                pauseAfterOpen.setOnFinished(ev2 -> {
+                    Timeline drive = new Timeline(
+                            new KeyFrame(Duration.ZERO,
+                                    new KeyValue
+                                            (floor.exitCar.layoutXProperty(),
+                                                    gateX - 100)),
+                            new KeyFrame(Duration.millis(700),
+                                    new KeyValue
+                                            (floor.exitCar.layoutXProperty(),
+                                                    ParkingFloorPane.FW + 80))
+                    );
+                    drive.setOnFinished(evv -> {
+                        floor.exitCar.setLayoutX(ParkingFloorPane.FW + 100);
+                        PauseTransition close =
+                                new PauseTransition(Duration.millis(400));
+                        close.setOnFinished(ec -> {
+                            floor.animateExitGate(false);
+                            animating = false;
+                        });
+                        close.play();
                     });
-                    close.play();
+                    drive.play();
                 });
-                drive.play();
+                pauseAfterOpen.play();
             });
-            pauseAfterOpen.play();
+            pauseBeforeOpen.play();
         });
         approach.play();
     }
 
     /**
-     * Resets all spots to available, hides cars, closes gates, clears event log.
+     * Resets all spots to available, hides cars, closes gates,
+     * clears event log.
      */
     private void handleReset() {
+
         for (int i = 0; i < ParkingFloorPane.TOTAL_SPOTS; i++) {
             spotSensorDriver.onSensorReading(i, false);
             floor.updateSpotLight(i, false);
@@ -308,22 +388,28 @@ public class ParkingGUI extends Application {
      * This is called when we need to force a refresh.
      */
     private void updateAllDisplays() {
+
         if (gateController != null) {
-            gateController.updateDisplay(ipms.totalAvailable, ipms.floorAvailable);
+            gateController.updateDisplay(ipms.totalAvailable,
+                    ipms.floorAvailable);
         }
     }
 
     /**
-     * Updates just the side panel count (this is GUI-specific, not part of the display drivers)
+     * Updates just the side panel count (this is GUI-specific,
+     * not part of the display drivers).
      */
     private void updateSidePanelCount() {
+
         int a = floor.countAvailableSpots();
         availableCountLabel.setText(String.valueOf(a));
-        availableCountLabel.setTextFill(a == 0 ? ParkingFloorPane.SPOT_OCCUPIED : ParkingFloorPane.SPOT_EMPTY);
+        availableCountLabel.setTextFill(a == 0 ?
+                ParkingFloorPane.SPOT_OCCUPIED : ParkingFloorPane.SPOT_EMPTY);
     }
 
     private void addLog(String msg) {
-        Label l = lbl(msg, "Menlo", 10, false, ParkingFloorPane.TEXT_PRIMARY);
+
+        Label l = lbl(msg, 10, false, ParkingFloorPane.TEXT_PRIMARY);
         l.setWrapText(true);
         logBox.getChildren().add(0, l);
         javafx.application.Platform.runLater(() -> logScroll.setVvalue(0));
@@ -333,28 +419,39 @@ public class ParkingGUI extends Application {
     //  WIDGET HELPERS
     // -------------------------------------------------
 
-    private Label lbl(String text, String font, double size, boolean bold, Color color) {
+    private Label lbl(String text, double size, boolean bold, Color color) {
+
         Label l = new Label(text);
-        l.setFont(bold ? Font.font(font, FontWeight.BOLD, size) : Font.font(font, size));
+        l.setFont(bold ? Font.font("Menlo", FontWeight.BOLD, size) :
+                Font.font("Menlo", size));
         l.setTextFill(color);
+
         return l;
     }
 
     private Button styledBtn(String text, Color color) {
+
         Button b = new Button(text);
         b.setFont(Font.font("Menlo", FontWeight.BOLD, 12));
         b.setTextFill(Color.WHITE);
         b.setPadding(new Insets(10, 24, 10, 24));
         String h = toHex(color);
-        b.setStyle("-fx-background-color:" + h + ";-fx-background-radius:6;-fx-cursor:hand;");
-        b.setOnMouseEntered(e -> b.setStyle("-fx-background-color:derive(" + h + ",20%);-fx-background-radius:6;-fx-cursor:hand;"));
-        b.setOnMouseExited(e  -> b.setStyle("-fx-background-color:" + h + ";-fx-background-radius:6;-fx-cursor:hand;"));
+        b.setStyle("-fx-background-color:" + h +
+                ";-fx-background-radius:6;-fx-cursor:hand;");
+        b.setOnMouseEntered(e -> b.setStyle
+                ("-fx-background-color:derive(" + h +
+                        ",20%);-fx-background-radius:6;-fx-cursor:hand;"));
+        b.setOnMouseExited(e  -> b.setStyle("-fx-background-color:" + h +
+                ";-fx-background-radius:6;-fx-cursor:hand;"));
+
         return b;
     }
 
     private String toHex(Color c) {
+
         return String.format("#%02x%02x%02x",
-                (int)(c.getRed()*255),(int)(c.getGreen()*255),(int)(c.getBlue()*255));
+                (int)(c.getRed()*255),(int)(c.getGreen()*255),
+                (int)(c.getBlue()*255));
     }
 
     public static void main(String[] args) { launch(args); }

@@ -1,18 +1,20 @@
+package Drivers.output;
+
+import GUI.ParkingFloorPane;
+
 /**
  * Output driver for the Main Entrance Availability Display.
- * Receives signal from MainEntryExitGateController and updates the main
- * entrance LCD screen showing total occupancy and per-floor availability.
- *
- * @author Jake Alsept
+ * Receives signal from Controllers.MainEntryExitGateController and updates the
+ * main entrance LCD screen showing total occupancy and per-floor availability.
  */
 public class MainEntranceDisplayDriver {
 
-    private ParkingFloorPane floor;
+    private final ParkingFloorPane floor;
 
     /**
-     * MainEntranceDisplayDriver Constructor.
+     * Drivers.output.MainEntranceDisplayDriver Constructor.
      *
-     * @param floor - the parking floor pane containing the visual
+     * @param floor the parking floor pane containing the visual
      *                display elements.
      */
     public MainEntranceDisplayDriver(ParkingFloorPane floor) {
@@ -23,10 +25,10 @@ public class MainEntranceDisplayDriver {
      * updateEntranceDisplay updates the main entrance display with total
      * structure occupancy, including per-floor availability.
      *
-     * @param totalAvailable - total number of available spots in the
-     *                         entire structure.
-     * @param totalCapacity  - total capacity of the structure.
-     * @param floorAvailable - array containing available spots per floor.
+     * @param totalAvailable total number of available spots in the
+     *                       entire structure.
+     * @param totalCapacity total capacity of the structure.
+     * @param floorAvailable array containing available spots per floor.
      */
     public void updateEntranceDisplay(int totalAvailable, int totalCapacity,
                                       int[] floorAvailable) {
@@ -34,24 +36,32 @@ public class MainEntranceDisplayDriver {
         javafx.application.Platform.runLater(() -> {
             if (totalAvailable == 0) {
                 floor.entranceDisplayTotal.setText("NO AVAILABILITY");
+
                 floor.entranceDisplayTotal.setTextFill
                         (ParkingFloorPane.SPOT_OCCUPIED);
+
                 floor.entranceDisplayFloor.setText("STRUCTURE FULL");
+
                 floor.entranceDisplayFloor.setTextFill
                         (ParkingFloorPane.SPOT_OCCUPIED);
             } else {
                 floor.entranceDisplayTotal.setText("TOTAL: " + totalAvailable +
                         " / " + totalCapacity);
+
                 floor.entranceDisplayTotal.setTextFill
                         (javafx.scene.paint.Color.web("#58ff8a"));
 
                 if (floorAvailable != null && floorAvailable.length > 0) {
+
                     StringBuilder floorInfo = new StringBuilder();
                     for (int i = 0; i < floorAvailable.length; i++) {
+
                         if (i > 0) floorInfo.append(" | ");
+
                         floorInfo.append("FLOOR ").append(i + 1).append(": ")
                                 .append(floorAvailable[i]).append(" AVAIL");
                     }
+
                     floor.entranceDisplayFloor.setText(floorInfo.toString());
                     floor.entranceDisplayFloor.setTextFill
                             (ParkingFloorPane.TEXT_PRIMARY);
