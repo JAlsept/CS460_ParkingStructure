@@ -13,6 +13,10 @@ public class ParkingSpotOccupancyController {
     IPMSController ipms;
     ParkingSpotDisplayOutputDriver displayOutputDriver;
 
+    /**
+     *
+     * @param ipms
+     */
     public ParkingSpotOccupancyController(IPMSController ipms) {
         this.ipms = ipms;
     }
@@ -22,16 +26,24 @@ public class ParkingSpotOccupancyController {
      * GUI.
      * @param driver
      */
-    public void setDisplayOutputDriver(ParkingSpotDisplayOutputDriver driver){
+    public void setDisplayOutputDriver(ParkingSpotDisplayOutputDriver driver) {
         this.displayOutputDriver = driver;
     }
 
+    /**
+     *
+     * @param spotID
+     */
     public void spotOccupied(int spotID) {
 
         ipms.processInput(new Event("SPOT_OCCUPIED", spotID));
         setIndicatorLight(spotID, true);
     }
 
+    /**
+     *
+     * @param spotID
+     */
     public void spotEmpty(int spotID) {
 
         ipms.processInput(new Event("SPOT_EMPTY", spotID));
@@ -45,7 +57,7 @@ public class ParkingSpotOccupancyController {
      */
     public void setIndicatorLight(int spotID, boolean occupied) {
 
-        if(displayOutputDriver != null){
+        if (displayOutputDriver != null) {
             displayOutputDriver.updateSpotLight(spotID, occupied);
         } else {
             System.out.println("spot " + spotID + " light -> " +

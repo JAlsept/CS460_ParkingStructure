@@ -14,7 +14,7 @@ public class MainEntranceDisplayDriver {
     /**
      * Drivers.output.MainEntranceDisplayDriver Constructor.
      *
-     * @param floor - the parking floor pane containing the visual
+     * @param floor the parking floor pane containing the visual
      *                display elements.
      */
     public MainEntranceDisplayDriver(ParkingFloorPane floor) {
@@ -25,10 +25,10 @@ public class MainEntranceDisplayDriver {
      * updateEntranceDisplay updates the main entrance display with total
      * structure occupancy, including per-floor availability.
      *
-     * @param totalAvailable - total number of available spots in the
-     *                         entire structure.
-     * @param totalCapacity  - total capacity of the structure.
-     * @param floorAvailable - array containing available spots per floor.
+     * @param totalAvailable total number of available spots in the
+     *                       entire structure.
+     * @param totalCapacity total capacity of the structure.
+     * @param floorAvailable array containing available spots per floor.
      */
     public void updateEntranceDisplay(int totalAvailable, int totalCapacity,
                                       int[] floorAvailable) {

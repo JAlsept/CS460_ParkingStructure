@@ -48,8 +48,4 @@ public class ParkingSpotOccupancySensorDriver {
     public Boolean getLastKnownState(int spotID) {
         return lastKnownState.get(spotID);
     }
-
-    // TODO: need to implement continuous polling for all spots
-    // probably loop through all spot IDs and read sensor values
-    // not sure how sensor hardware communicates yet, leaving for now
 }

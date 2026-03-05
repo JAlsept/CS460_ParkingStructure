@@ -8,6 +8,9 @@ public class MainGateMechanismDriver {
 
     private boolean gateOpen;
 
+    /**
+     *
+     */
     public MainGateMechanismDriver() {
         gateOpen = false;
     }

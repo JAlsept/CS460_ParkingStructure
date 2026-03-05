@@ -24,6 +24,11 @@ public class MainEntryExitGateController {
     MainEntranceDisplayDriver entranceDisplayDriver;
     FloorDisplayDriver floorDisplayDriver;
 
+    /**
+     * MainEntryExitGateController constructor.
+     * @param ipms - the IPMS controller that manages the overall parking
+     *             system.
+     */
     public MainEntryExitGateController(IPMSController ipms) {
 
         this.ipms = ipms;
@@ -33,10 +38,10 @@ public class MainEntryExitGateController {
 
     /**
      * Links gate output driver so that gate animations are sent to the GUI.
-     * Called from GUI.ParkingGUI.initSystem.
-     * @param driver
+     * Called from initSystem in ParkingGUI.
+     * @param driver - the gate output driver.
      */
-    public void setGateOutputDriver(GateOutputDriver driver){
+    public void setGateOutputDriver(GateOutputDriver driver) {
         this.gateOutputDriver = driver;
     }
 
@@ -49,10 +54,18 @@ public class MainEntryExitGateController {
         sendEventToIPMS(new Event("ENTRY"));
     }
 
+    /**
+     *
+     * @param driver - the main entrance display driver.
+     */
     public void setMainEntranceDisplayDriver(MainEntranceDisplayDriver driver) {
         this.entranceDisplayDriver = driver;
     }
 
+    /**
+     *
+     * @param driver
+     */
     public void setFloorDisplayDriver(FloorDisplayDriver driver) {
         this.floorDisplayDriver = driver;
     }
@@ -79,12 +92,13 @@ public class MainEntryExitGateController {
      * updates local state.
      */
     public void raiseMainGate() {
+
         gateDriver.openGate();
         gateOpen = true;
         System.out.println("gate opened");
 
         //sends signal to physical hardware and Triggers GUI animation
-        if(gateOutputDriver != null){
+        if (gateOutputDriver != null) {
             gateOutputDriver.openEntryGate();
         }
     }
@@ -93,16 +107,22 @@ public class MainEntryExitGateController {
      * Lowers the main gate via MainGateMechanismDriver and updates local state.
      */
     public void closeMainGate() {
+
         gateDriver.closeGate();
         gateOpen = false;
         System.out.println("gate closed");
 
         //sends signal to physical hardware and triggers GUI animation
-        if(gateOutputDriver != null){
+        if (gateOutputDriver != null) {
             gateOutputDriver.closeEntryGate();
         }
     }
 
+    /**
+     *
+     * @param totalAvailable
+     * @param floorAvailable
+     */
     public void updateDisplay(int totalAvailable, int[] floorAvailable) {
 
         System.out.println("display updated: " + totalAvailable +

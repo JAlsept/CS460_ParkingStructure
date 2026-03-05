@@ -156,7 +156,8 @@ public class ParkingFloorPane {
         lb.setLayoutY(isTop ? y + ParkingFloorPane.SPOT_H - 14 : y + 2);
         p.getChildren().add(lb);
 
-        Circle light = new Circle(x + ParkingFloorPane.SPOT_W / 2, isTop ? y - 8 : y + ParkingFloorPane.SPOT_H + 8, 5,
+        Circle light = new Circle(x + ParkingFloorPane.SPOT_W / 2,
+                isTop ? y - 8 : y + ParkingFloorPane.SPOT_H + 8, 5,
                 SPOT_EMPTY);
 
         light.setStroke(FLOOR_COLOR); light.setStrokeWidth(1.5);
@@ -188,8 +189,9 @@ public class ParkingFloorPane {
         lb.setLayoutY(y + ParkingFloorPane.SIDE_H / 2 - 6);
         p.getChildren().add(lb);
 
-        Circle light = new Circle(isLeft ? x - 10 : x + ParkingFloorPane.SIDE_W + 10, y + ParkingFloorPane.SIDE_H / 2, 5,
-                SPOT_EMPTY);
+        Circle light = new Circle(isLeft ? x - 10 : x +
+                ParkingFloorPane.SIDE_W + 10, y + ParkingFloorPane.SIDE_H / 2,
+                5, SPOT_EMPTY);
 
         light.setStroke(FLOOR_COLOR); light.setStrokeWidth(1.5);
         spotLights[id] = light;
@@ -225,7 +227,8 @@ public class ParkingFloorPane {
     // -------------------------------------------------
 
     /**
-     * Builds the availability display bar shown between the floor and gate lanes.
+     * Builds the availability display bar shown between the floor and gate
+     * lanes.
      */
     HBox buildInfoBar() {
 

@@ -45,8 +45,8 @@ public class ParkingGUI extends Application {
     private boolean animating = false;
 
     // side panel labels
-    private Label      availableCountLabel;
-    private VBox       logBox;
+    private Label availableCountLabel;
+    private VBox logBox;
     private ScrollPane logScroll;
 
     // -------------------------------------------------

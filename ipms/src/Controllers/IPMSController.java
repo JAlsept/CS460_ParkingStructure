@@ -4,6 +4,9 @@ import Data.*;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ *
+ */
 public class IPMSController {
 
     public int totalAvailable;
@@ -19,17 +22,21 @@ public class IPMSController {
     public ParkingSpotOccupancyController occupancyController;
     DataStore dataStore;
 
+    /**
+     *
+     * @param totalSpots
+     * @param floorLayout
+     */
     public IPMSController(int totalSpots, int[] floorLayout) {
 
         this.totalCapacity = totalSpots;
         this.totalAvailable = totalSpots;
         this.floorAvailable = floorLayout.clone();
         this.floorCapacity = floorLayout.clone();
-        this.spotOccupied = new HashMap<>();
-        this.spotToFloor = new HashMap<>();
+        this.spotOccupied = new HashMap <>();
+        this.spotToFloor = new HashMap <>();
         this.systemOperational = true;
 
-        // Keep this to initialize all spots as vacate
         int spotID = 0;
         for (int floor = 0; floor < floorLayout.length; floor++) {
             for (int i = 0; i < floorLayout[floor]; i++) {
@@ -50,16 +57,20 @@ public class IPMSController {
      * @param floorLayout
      * @param spotMap
      */
-    public IPMSController(int totalSpots, int[] floorLayout, Map<Integer,
+    public IPMSController(int totalSpots, int[] floorLayout, Map <Integer,
             Integer> spotMap) {
 
         this(totalSpots, floorLayout);
         this.spotToFloor.putAll(spotMap);
-        for (int id : spotMap.keySet()) {
+        for (int id: spotMap.keySet()) {
             spotOccupied.put(id, false);
         }
     }
 
+    /**
+     *
+     * @param e
+     */
     public void processInput(Event e) {
 
         if (e == null) return;
@@ -68,11 +79,11 @@ public class IPMSController {
             case "ENTRY" -> authorizeEntry();
             case "EXIT" -> authorizeExit();
             case "SPOT_OCCUPIED" -> {
-                spotOccupied.put(e.spotID, true);
+                    spotOccupied.put(e.spotID, true);
                 updateAvailability();
             }
             case "SPOT_EMPTY" -> {
-                spotOccupied.put(e.spotID, false);
+                    spotOccupied.put(e.spotID, false);
                 updateAvailability();
             }
             default -> System.out.println("unknown event: " + e.type);
@@ -82,10 +93,18 @@ public class IPMSController {
         updateSystemState();
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean capacityAvailable() {
         return totalAvailable > 0;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean authorizeEntry() {
 
         if (!systemOperational) {
@@ -102,18 +121,24 @@ public class IPMSController {
         return true;
     }
 
+    /**
+     *
+     */
     public void authorizeExit() {
 
         // just open the gate, occupancy updated by spot sensors
         gateController.raiseMainGate();
     }
 
+    /**
+     *
+     */
     public void updateAvailability() {
 
         // recalculate per-floor counts from spotToFloor map
         int[] newFloorAvailable = new int[floorAvailable.length];
 
-        for (Map.Entry<Integer, Boolean> entry : spotOccupied.entrySet()) {
+        for (Map.Entry <Integer, Boolean> entry: spotOccupied.entrySet()) {
             int spotID = entry.getKey();
             boolean isOccupied = entry.getValue();
             int floor = spotToFloor.get(spotID);
@@ -126,7 +151,7 @@ public class IPMSController {
 
         // sum floor counts for total
         int total = 0;
-        for (int count : floorAvailable) {
+        for (int count: floorAvailable) {
             total += count;
         }
 
@@ -135,16 +160,23 @@ public class IPMSController {
         gateController.updateDisplay(totalAvailable, floorAvailable);
     }
 
+    /**
+     *
+     */
     public void updateSystemState() {
+
         // if either sub-controller is gone something is seriously wrong
         if (gateController == null || occupancyController == null) {
             systemOperational = false;
-            System.out.println
-                    ("a sub-controller is null, something went wrong");
+            System.out.println("a sub-controller is null, something went wrong");
         }
         dataStore.storeSystemState();
     }
 
+    /**
+     *
+     * @return
+     */
     public String generateDisplayData() {
         StringBuilder sb = new StringBuilder();
         sb.append("Total Available: ").append(totalAvailable).append("\n");

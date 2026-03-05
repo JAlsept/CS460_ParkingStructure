@@ -11,6 +11,10 @@ public class GateOutputDriver {
 
     private final ParkingFloorPane floor;
 
+    /**
+     *
+     * @param floor
+     */
     public GateOutputDriver(ParkingFloorPane floor) {
         this.floor = floor;
     }

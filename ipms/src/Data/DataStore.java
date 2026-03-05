@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.nio.file.*;
 
+/**
+ *
+ */
 public class DataStore {
 
-    List<Event> eventLog;
+    List <Event> eventLog;
     String lastCapacitySnapshot;
     String lastSystemState;
 
@@ -15,10 +18,18 @@ public class DataStore {
     static final String SYSTEM_FILE = "system_state.txt";
     static final String EVENT_LOG_FILE = "event_log.txt";
 
+    /**
+     *
+     */
     public DataStore() {
-        eventLog = new ArrayList<>();
+        eventLog = new ArrayList <>();
     }
 
+    /**
+     *
+     * @param e
+     * @return
+     */
     public boolean logEvent(Event e) {
         try {
             eventLog.add(e);
@@ -28,7 +39,7 @@ public class DataStore {
                     e.spotID + "\n";
 
             Files.write(Paths.get(EVENT_LOG_FILE), line.getBytes(),
-                StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                    StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 
             System.out.println("logged event: " + e.type);
 
@@ -40,7 +51,12 @@ public class DataStore {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean storeCapacity() {
+
         try {
             lastCapacitySnapshot = "capacity saved at " +
                     System.currentTimeMillis();
@@ -57,12 +73,17 @@ public class DataStore {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean storeSystemState() {
+
         try {
             lastSystemState = "state saved at " + System.currentTimeMillis();
 
             Files.write(Paths.get(SYSTEM_FILE), lastSystemState.getBytes(),
-                StandardOpenOption.CREATE,
+                    StandardOpenOption.CREATE,
                     StandardOpenOption.TRUNCATE_EXISTING);
 
             return true;
@@ -72,29 +93,5 @@ public class DataStore {
                     ex.getMessage());
             return false;
         }
-    }
-
-    /**
-     *
-     * @return last saved capacity snapshot string.
-     */
-    public String getLastCapacitySnapshot() {
-        return lastCapacitySnapshot;
-    }
-
-    /**
-     *
-     * @return last saved system state string.
-     */
-    public String getLastSystemState() {
-        return lastSystemState;
-    }
-
-    /**
-     *
-     * @return returns a copy of the full event log.
-     */
-    public List<Event> getEventLog() {
-        return new ArrayList<>(eventLog);
     }
 }

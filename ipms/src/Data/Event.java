@@ -12,6 +12,11 @@ public class Event {
     public int spotID;
     long timestamp;
 
+    /**
+     *
+     * @param type
+     * @param spotID
+     */
     public Event(String type, int spotID) {
 
         this.type = type;
@@ -19,6 +24,10 @@ public class Event {
         this.timestamp = System.currentTimeMillis();
     }
 
+    /**
+     *
+     * @param type
+     */
     public Event(String type) {
         this(type, -1);
     }

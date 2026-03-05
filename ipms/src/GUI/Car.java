@@ -9,6 +9,9 @@ import javafx.scene.shape.*;
  */
 public class Car extends Group {
 
+    /**
+     *
+     */
     public Car() {
 
         // car body

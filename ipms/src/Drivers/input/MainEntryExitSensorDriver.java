@@ -12,6 +12,10 @@ public class MainEntryExitSensorDriver {
     boolean entrySensorActive;
     boolean exitSensorActive;
 
+    /**
+     *
+     * @param gateController
+     */
     public MainEntryExitSensorDriver
             (MainEntryExitGateController gateController) {
 
@@ -49,21 +53,28 @@ public class MainEntryExitSensorDriver {
         System.out.println("entry sensor cleared");
     }
 
+    /**
+     *
+     */
     public void onExitSensorCleared() {
 
         exitSensorActive = false;
         System.out.println("exit sensor cleared");
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isEntrySensorActive() {
         return entrySensorActive;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isExitSensorActive() {
         return exitSensorActive;
     }
-
-    // TODO: add polling or interrupt-based sensor reading
-    // right now assuming something external calls these methods
-    // need to wire up actual hardware interface later
 }

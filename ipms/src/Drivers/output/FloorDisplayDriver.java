@@ -15,9 +15,9 @@ public class FloorDisplayDriver {
     /**
      * Drivers.output.FloorDisplayDriver Constructor.
      *
-     * @param floor       - the parking floor pane containing the visual
-     *                      display elements.
-     * @param floorNumber - the floor number this display represents.
+     * @param floor the parking floor pane containing the visual
+     *              display elements.
+     * @param floorNumber the floor number this display represents.
      */
     public FloorDisplayDriver(ParkingFloorPane floor, int floorNumber) {
         this.floor = floor;
@@ -30,8 +30,8 @@ public class FloorDisplayDriver {
      * 
      * totalSpots is unused in demo but would be used in real implementation.
      *
-     * @param availableSpots - number of available spots on this specific floor.
-     * @param totalSpots     - total number of spots on this floor.
+     * @param availableSpots number of available spots on this specific floor.
+     * @param totalSpots total number of spots on this floor.
      */
     public void updateFloorDisplay(int availableSpots, int totalSpots) {
 
@@ -52,7 +52,7 @@ public class FloorDisplayDriver {
      * Gets the floor number this driver is associated with.
      * Unused in demo but would be used in real implementation.
      *
-     * @return - floor number.
+     * @return floor number.
      */
     public int getFloorNumber() {
         return floorNumber;
