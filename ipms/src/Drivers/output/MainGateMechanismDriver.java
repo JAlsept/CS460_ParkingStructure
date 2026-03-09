@@ -1,7 +1,7 @@
 package Drivers.output;
 
 /**
- * MainGateMechanismDriver is theoutput driver for the physical boom barrier
+ * MainGateMechanismDriver is the output driver for the physical boom barrier
  * gate mechanism.
  */
 public class MainGateMechanismDriver {
@@ -9,7 +9,7 @@ public class MainGateMechanismDriver {
     private boolean gateOpen;
 
     /**
-     *
+     ** Initializes the gate mechanism driver with the gate closed
      */
     public MainGateMechanismDriver() {
         gateOpen = false;
@@ -35,7 +35,7 @@ public class MainGateMechanismDriver {
 
     /**
      * Returns the current state.
-     * @return
+     * @return true if the gate is opened
      */
     public boolean isGateOpen() {
         return gateOpen;

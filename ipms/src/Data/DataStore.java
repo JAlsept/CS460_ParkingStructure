@@ -5,7 +5,8 @@ import java.util.List;
 import java.nio.file.*;
 
 /**
- *
+ * Manages the storage for the IPMS. Logs events and saves system states and
+ * capacity count to their respective files.
  */
 public class DataStore {
 
@@ -19,16 +20,16 @@ public class DataStore {
     static final String EVENT_LOG_FILE = "event_log.txt";
 
     /**
-     *
+     * Initializes the event log list
      */
     public DataStore() {
         eventLog = new ArrayList <>();
     }
 
     /**
-     *
-     * @param e
-     * @return
+     * Logs an event and saves it to the event log file
+     * @param e the event to log
+     * @return false if the file fails to log event, true otherwise
      */
     public boolean logEvent(Event e) {
         try {
@@ -52,8 +53,8 @@ public class DataStore {
     }
 
     /**
-     *
-     * @return
+     * Saves the current capacity snapshot to its respective file
+     * @return true if file write was successful, false otherwise.
      */
     public boolean storeCapacity() {
 
@@ -74,8 +75,8 @@ public class DataStore {
     }
 
     /**
-     *
-     * @return
+     * Saves the current system state to its respective file.
+     * @return true if file write was successful, false otherwise.
      */
     public boolean storeSystemState() {
 

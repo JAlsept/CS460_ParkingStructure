@@ -23,8 +23,8 @@ public class ParkingSpotOccupancySensorDriver {
 
     /**
      * ultrasonic sensor returns true = something detected = spot occupied.
-     * @param spotID
-     * @param occupied
+     * @param spotID spot that we are considering
+     * @param occupied true if the parking space is occupied, false otherwise
      */
     public void onSensorReading(int spotID, boolean occupied) {
         Boolean prev = lastKnownState.get(spotID);
@@ -42,8 +42,8 @@ public class ParkingSpotOccupancySensorDriver {
 
     /**
      * Gets last known state for a spot, returns null if never read.
-     * @param spotID
-     * @return
+     * @param spotID spot that we are considering
+     * @return true if we know the last state of the parking spot, false otherwise
      */
     public Boolean getLastKnownState(int spotID) {
         return lastKnownState.get(spotID);

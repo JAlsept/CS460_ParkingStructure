@@ -55,7 +55,8 @@ public class MainEntryExitGateController {
     }
 
     /**
-     *
+     * Links the main entrance display driver so availability updates are
+     * sent to the Main Display
      * @param driver - the main entrance display driver.
      */
     public void setMainEntranceDisplayDriver(MainEntranceDisplayDriver driver) {
@@ -63,8 +64,9 @@ public class MainEntryExitGateController {
     }
 
     /**
-     *
-     * @param driver
+     * Links the floor display driver so availability updates are sent to
+     * the floor displays.
+     * @param driver the floor display driver
      */
     public void setFloorDisplayDriver(FloorDisplayDriver driver) {
         this.floorDisplayDriver = driver;
@@ -119,9 +121,9 @@ public class MainEntryExitGateController {
     }
 
     /**
-     *
-     * @param totalAvailable
-     * @param floorAvailable
+     * Updates the entrance and floor displays with current availability counts
+     * @param totalAvailable total available spots in the structure
+     * @param floorAvailable number of available spots per floor
      */
     public void updateDisplay(int totalAvailable, int[] floorAvailable) {
 

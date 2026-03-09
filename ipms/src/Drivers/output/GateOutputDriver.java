@@ -12,8 +12,9 @@ public class GateOutputDriver {
     private final ParkingFloorPane floor;
 
     /**
-     *
-     * @param floor
+     * Gate output driver constructor that takes a reference to ParkingFloorPane
+     * to trigger gate animations
+     * @param floor the parking floor pane
      */
     public GateOutputDriver(ParkingFloorPane floor) {
         this.floor = floor;

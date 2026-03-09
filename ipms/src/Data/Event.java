@@ -13,9 +13,10 @@ public class Event {
     long timestamp;
 
     /**
-     *
-     * @param type
-     * @param spotID
+     * Creates an event for a specific parking spot
+     * @param type the event type
+     * @param spotID the spot this event applies to
+
      */
     public Event(String type, int spotID) {
 
@@ -25,8 +26,8 @@ public class Event {
     }
 
     /**
-     *
-     * @param type
+     * Creates a gate event with no associated spotID
+     * @param type the event type. (ENTRY or EXIT)
      */
     public Event(String type) {
         this(type, -1);

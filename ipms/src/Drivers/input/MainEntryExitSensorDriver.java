@@ -13,8 +13,8 @@ public class MainEntryExitSensorDriver {
     boolean exitSensorActive;
 
     /**
-     *
-     * @param gateController
+     * Initializes the sensor driver with a reference to the gate controller
+     * @param gateController the gate controller
      */
     public MainEntryExitSensorDriver
             (MainEntryExitGateController gateController) {
@@ -54,7 +54,7 @@ public class MainEntryExitSensorDriver {
     }
 
     /**
-     *
+     * Called when exit sensor no longer detects a vehicle
      */
     public void onExitSensorCleared() {
 
@@ -63,16 +63,16 @@ public class MainEntryExitSensorDriver {
     }
 
     /**
-     *
-     * @return
+     *Returns whether the entry sensor is currently active.
+     * @return true if vehicle is detected at entry sensor
      */
     public boolean isEntrySensorActive() {
         return entrySensorActive;
     }
 
     /**
-     *
-     * @return
+     * Returns if the exit sensor is currently active
+     * @return true if a vehicle is detected at the exit sensor
      */
     public boolean isExitSensorActive() {
         return exitSensorActive;

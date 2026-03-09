@@ -10,7 +10,7 @@ import javafx.scene.shape.*;
 public class Car extends Group {
 
     /**
-     *
+     * Builds the car graphics.
      */
     public Car() {
 

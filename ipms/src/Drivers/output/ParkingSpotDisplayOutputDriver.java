@@ -12,9 +12,9 @@ public class ParkingSpotDisplayOutputDriver {
     private final ParkingFloorPane floor;
 
     /**
-     * takes a reference to parkingFloorPane to trigger parking spot light
+     * takes a reference to parkingFloorPane to trigger parking spotlight
      * changes.
-     * @param floor
+     * @param floor parking floor we are taking into consideration
      */
     public ParkingSpotDisplayOutputDriver(ParkingFloorPane floor) {
 
@@ -26,8 +26,8 @@ public class ParkingSpotDisplayOutputDriver {
     /**
      * Spot changed state. If occupied (true) red light displayed. Else
      * occupied (false) green light displayed
-     * @param spotID
-     * @param occupied
+     * @param spotID, spot that is being considered
+     * @param occupied true if the parking spot is occupied, false otherwise
      */
     public void updateSpotLight(int spotID, boolean occupied) {
 
